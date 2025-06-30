@@ -1,0 +1,341 @@
+{
+  "name": "Complex LINE Payslip Extraction Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "line-webhook"
+      },
+      "id": "Line_Messaging_API",
+      "name": "Line: Messaging API",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [-900, 0]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Check if user is allowed\nreturn { json: { allowed: true } };"
+      },
+      "id": "User_Authentication",
+      "name": "User Authentication/Whitelist",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [-700, 0]
+    },
+    {
+      "parameters": {},
+      "id": "Auto_Reply_Fallback",
+      "name": "Auto-Reply Fallback",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [-700, 200]
+    },
+    {
+      "parameters": {},
+      "id": "Message_Type",
+      "name": "Message Type",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [-500, 0]
+    },
+    {
+      "parameters": {},
+      "id": "Message_Classification",
+      "name": "Message Classification",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [-300, 0]
+    },
+    {
+      "parameters": {},
+      "id": "Text_Message_Processing",
+      "name": "Text Message Processing",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [-100, -200]
+    },
+    {
+      "parameters": {},
+      "id": "Google_Gemini_for_Text",
+      "name": "Google Gemini for Text",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [100, -300]
+    },
+    {
+      "parameters": {},
+      "id": "Window_Buffer_Memory",
+      "name": "Window Buffer Memory",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [100, -400]
+    },
+    {
+      "parameters": {},
+      "id": "Line_Text_Response_to_User",
+      "name": "Line: Text Response to User",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [100, -200]
+    },
+    {
+      "parameters": {},
+      "id": "Feedback_Request",
+      "name": "Feedback/Rating Request",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [300, -200]
+    },
+    {
+      "parameters": {},
+      "id": "Collect_Feedback",
+      "name": "Collect Feedback",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [500, -200]
+    },
+    {
+      "parameters": {},
+      "id": "File_Type_Validation",
+      "name": "File Type/Quality Validation",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [-100, 200]
+    },
+    {
+      "parameters": {},
+      "id": "Line_Get_Image",
+      "name": "Line: Get Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [100, 200]
+    },
+    {
+      "parameters": {},
+      "id": "Image_Message_Processing",
+      "name": "Image Message Processing",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [300, 200]
+    },
+    {
+      "parameters": {},
+      "id": "Google_Gemini_for_Image",
+      "name": "Google Gemini for Image",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [500, 100]
+    },
+    {
+      "parameters": {},
+      "id": "Error_Notification",
+      "name": "Error Notification",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [300, 400]
+    },
+    {
+      "parameters": {},
+      "id": "Notify_Admin_on_Error",
+      "name": "Notify Admin on Error",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [500, 400]
+    },
+    {
+      "parameters": {},
+      "id": "Line_Response_to_User",
+      "name": "Line: Response to User",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [500, 200]
+    },
+    {
+      "parameters": {},
+      "id": "Text_from_Slip_Result",
+      "name": "Text from Slip Result",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [700, 200]
+    },
+    {
+      "parameters": {},
+      "id": "Log_to_Database",
+      "name": "Log Request to DB",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [100, 400]
+    },
+    {
+      "parameters": {},
+      "id": "Google_Sheets_Storage",
+      "name": "Google Sheets Storage",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {},
+      "id": "Export_Data",
+      "name": "Export Data as CSV",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1100, 200]
+    },
+    {
+      "parameters": {},
+      "id": "Admin_Broadcast",
+      "name": "Admin Broadcast",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1300, 200]
+    }
+  ],
+  "connections": {
+    "Line: Messaging API": {
+      "main": [
+        [
+          { "node": "User Authentication/Whitelist", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "User Authentication/Whitelist": {
+      "main": [
+        [
+          { "node": "Message Type", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Auto-Reply Fallback", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Message Type": {
+      "main": [
+        [
+          { "node": "Message Classification", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Message Classification": {
+      "main": [
+        [
+          { "node": "Text Message Processing", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "File Type/Quality Validation", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Auto-Reply Fallback", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Text Message Processing": {
+      "main": [
+        [
+          { "node": "Line: Text Response to User", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Log Request to DB", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Line: Text Response to User": {
+      "main": [
+        [
+          { "node": "Feedback/Rating Request", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Feedback/Rating Request": {
+      "main": [
+        [
+          { "node": "Collect Feedback", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Collect Feedback": {
+      "main": [
+        [
+          { "node": "Log Request to DB", "type": "main", "index": 1 }
+        ]
+      ]
+    },
+    "File Type/Quality Validation": {
+      "main": [
+        [
+          { "node": "Line: Get Image", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Error Notification", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Error Notification": {
+      "main": [
+        [
+          { "node": "Notify Admin on Error", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Auto-Reply Fallback", "type": "main", "index": 1 }
+        ]
+      ]
+    },
+    "Line: Get Image": {
+      "main": [
+        [
+          { "node": "Image Message Processing", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Image Message Processing": {
+      "main": [
+        [
+          { "node": "Line: Response to User", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Log Request to DB", "type": "main", "index": 2 }
+        ],
+        [
+          { "node": "Error Notification", "type": "main", "index": 1 }
+        ]
+      ]
+    },
+    "Line: Response to User": {
+      "main": [
+        [
+          { "node": "Text from Slip Result", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Text from Slip Result": {
+      "main": [
+        [
+          { "node": "Google Sheets Storage", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Google Sheets Storage": {
+      "main": [
+        [
+          { "node": "Export Data as CSV", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Export Data as CSV": {
+      "main": [
+        [
+          { "node": "Admin Broadcast", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Admin Broadcast": {
+      "main": [
+        [
+          { "node": "Line: Messaging API", "type": "main", "index": 1 }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "id": "ComplexLinePayslip"
+}
